@@ -1,0 +1,34 @@
+/* bio(enfant, sexe, annee_naissance, annee_mort, pere, mere)  */
+
+q1:
+bio(louis13,h,1601,1643,henri4,marie_medicis).
+
+q2:
+bio(louis17,h,1785,1795,louis16,marie_medicis).
+
+q3:
+bio(X,f,_,_,_,_).
+
+q4:
+enfant(X,henri4).
+
+q5:
+bio(_,_,_,_,_,MERE).
+
+q6:
+enfant(louis14,PARENT).
+
+q7:
+naissance(X, Y, Z):-
+    bio(X,_,AND,_,_,_),
+    AND >= Y, AND =< Z.
+
+naissance(NOM,1750,1800).
+
+q8:
+
+q9:
+descendant(DESCENDANT,louis14).
+
+q10:
+descendant(louis17,ANCETRE).

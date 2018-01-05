@@ -1,0 +1,31 @@
+/* Exercice 3*/
+
+/* les faits */
+presse(jairo).
+serieux(alfredo).
+
+
+/* les règles */
+
+% R1
+
+paye(X, impots) :-
+    serieux(X).
+
+
+%R2
+
+paye(X, amendes) :-
+    presse(X).
+
+%R3
+cont_serieux(X) :-
+    paye(X,amendes).
+
+%R4
+
+cont_libre(X) :-
+    paye(X,impots).
+
+
+

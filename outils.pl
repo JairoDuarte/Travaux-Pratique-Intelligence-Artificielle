@@ -1,0 +1,1 @@
+clear :- tty_clear.

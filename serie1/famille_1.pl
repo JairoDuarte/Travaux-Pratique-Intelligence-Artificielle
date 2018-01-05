@@ -1,0 +1,30 @@
+/*
+
+fichier : famille_1.pl
+
+*/
+
+/* Clauses décrivant la relation 'parent' */
+% parent(X,Y) : X est un parent de Y
+parent(paul,cloe).
+parent(paul,marc).
+parent(aude,marc).
+parent(marc,lisa).
+parent(marc,dana).
+parent(dana,abel).
+
+/* Clauses décrivant la propriété feminin */
+feminin(aude).
+feminin(cloe).
+feminin(lisa).
+feminin(dana).
+
+/* Clauses décrivant la propriété masculin */
+masculin(paul).
+masculin(marc).
+masculin(abel).
+
+/* Règles */
+pere(X, Y) :-
+    parent(X,Y),
+    masculin(X).
