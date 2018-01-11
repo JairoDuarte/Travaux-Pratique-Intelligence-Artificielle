@@ -1,13 +1,14 @@
 
 rue(X) :-
-    Rue = [maison(C1,_,_),maison(C2,_,_),maison(C3,_,_)],
+    Rue = [maison(C1,_,tennis),maison(C2,_,_),maison(C3,_,_)],
     suppr(C1,[blanc,blue,vert],Cc1),
     suppr(C2,Cc1,Cc2),
     suppr(C3,Cc2,_),
     membre(maison(vert,_,boxe),Rue),
     precede(maison(vert,_,_),maison(_,algerienne,_),Rue),
+    precede(maison(blanc,_,_),maison(vert,_,_),Rue),
     membre(maison(blanc,marocaine,_),Rue),
-    membre(maison(_,_,tennis),Rue),
+    %membre(maison(_,_,tennis),Rue),
     membre(maison(_,tunisienne,_),Rue),
     membre(maison(_,_,football),Rue),
     X=Rue.
