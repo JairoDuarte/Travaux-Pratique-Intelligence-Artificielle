@@ -1,4 +1,5 @@
 
+/* deuxième version  */
 rue(X) :-
     Rue = [maison(C1,N1,S1),maison(C2,N2,S2),maison(C3,N3,S3)],
     
@@ -26,9 +27,6 @@ precede(X,Y,[_|R]):-
     precede(X,Y,R).
 
 debut(X,[X|R]).
-/*debut(X,[Y|R1]) :-
-    debut(X,R),
-    conc(R,)*/
 
 
 rue_v1(X) :-
