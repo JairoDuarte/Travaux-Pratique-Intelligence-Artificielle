@@ -19,12 +19,12 @@ succ(E1,E2) :-
     verser(Mx,X,My,Y,Qx,Qy),
     setof(r(M,K),membre(r(M,K),[r(Mx,Qx),r(My,Qy)|R]),E2).
 
-verser(Mx,X,My,Y,Qx,Qy) :-
+verser(_,X,My,Y,Qx,Qy) :-
     X =\= 0,
     Z is My -Y, 
     (X > Z,Qy is Y+Z, Qx is X -Z; Z > X,Qy is Y + X,Qx is X-X).
 
-verser(Mx,X,My,Y,Qx,Qy) :-
+verser(Mx,X,_,Y,Qx,Qy) :-
     Y =\= 0,
     Z is Mx -X, 
     (Y > Z, Qx is X+Z, Qy is Y -Z; Z > Y, Qx is X + Y,Qy is Y-Y).
@@ -50,21 +50,19 @@ Utilise les prédicats correspondants au problème à résoudre suivants :
 	succ(Etat1, Etat2)
 		relation successeur : Etat2 est un successeur de Etat1
  ---------------------------------------------------------------------*/
-solution(Nbr,E1, Ch_Sol,Op) :-
-	dfs_ts(Nbr, E1, Ch),
-    suppr(Ch_Sol,Ch,Op).
+solution(E1, Ch_Sol) :-
+	dfs_ts(E1, Ch_Sol).
 
-solution(Nbr,E1) :-
-	dfs_ts(Nbr, E1, Ch_Sol),
+solution(E1) :-
+	dfs_ts(E1, Ch_Sol),
     afficher(Ch_Sol).
  
-dfs_ts(Nbr, Ef, [[Ef]]):-
-	test_but(Ef,Nbr).
+dfs_ts(Ef, [Ef]) :-
+	test_but(Ef).
 
-dfs_ts(Nbr, E1,[[E1|Re],[Op|Rop]]) :-
-	succ(E1, E2,Op),
-	dfs_ts(Nbr,E2, Ch1),
-    suppr(Re,Ch1,Rop).
+dfs_ts(E1,[E1|Ch1]) :-
+	succ(E1, E2),
+	dfs_ts(E2, Ch1).
 
 /* Test 
 solution(347,[25,7,4,2,3],Ch,Op).
