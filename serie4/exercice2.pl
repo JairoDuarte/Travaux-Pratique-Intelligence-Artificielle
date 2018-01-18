@@ -10,12 +10,17 @@ op_c(X,Y,Z,W) :-
     W = X+Y.
 
 op_c(X,Y,Z,W) :- 
+    X > Y,
     Z is X/Y,
     W = X / Y.
 
 op_c(X,Y,Z,W) :- 
+    X > Y,
     Z is X-Y,
     W = X - Y.
+
+op_c(X,Y,Z,Y-X) :- Y > X, Z is Y - X.
+op_c(X,Y,Z,Y/X) :- Y > X, Z is Y/X.
 
 main([Y],Y).
 main([X|Reste],Q) :-
