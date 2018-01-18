@@ -27,8 +27,6 @@ couleurs(G,[X|R],[Cc|Rc]) :-
     suppr(n(X,Cc,_),G,Gr),
     couleurs(Gr,R,Rc).
 
-
-/*  */
 /*----------------------------------------------------------------------
 	Programme : dfs_ts.pl
 
