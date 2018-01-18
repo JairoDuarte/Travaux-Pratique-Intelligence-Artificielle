@@ -1,4 +1,5 @@
 :- include("../outils.pl").
+:- include("../serie3/liste.pl").
 
 op_c(X,Y,Z,W) :-
     Z is X*Y,

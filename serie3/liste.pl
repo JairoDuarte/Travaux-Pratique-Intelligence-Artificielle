@@ -40,3 +40,25 @@ suppr(X,[Y|R],[Y|R1]):-
 %insert(X, L, L1).
 insert(X, L, L1) :- suppr(X, L1, L).
 
+%
+% dernier(Item, L) : Item est le dernier membre de la liste L
+%
+dernier(Item,[Item]).
+dernier(Item, [_|Q]) :- dernier(Item,Q).
+
+
+% inverser(+L1,?L2)
+inverser([], []).
+inverser([X|R], L2) :-
+	inverser(R, R1),
+	conc(R1, [X], L2).
+
+
+%
+% afficher les �l�ments d'une liste
+
+afficher([]).
+
+afficher([X|L]) :-
+	write(X),nl,
+	afficher(L).
