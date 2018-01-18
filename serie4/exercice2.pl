@@ -42,30 +42,31 @@ Utilise les prédicats correspondants au problème à résoudre suivants :
 	succ(Etat1, Etat2)
 		relation successeur : Etat2 est un successeur de Etat1
  ---------------------------------------------------------------------*/
-solution(Nbr,E1, Ch_Sol) :-
-	dfs_ts(Nbr, E1, Ch_Sol).
+solution(Nbr,E1, Ch_Sol,Op) :-
+	dfs_ts(Nbr, E1, Ch),
+    suppr(Ch_Sol,Ch,Op).
 
 solution(Nbr,E1) :-
 	dfs_ts(Nbr, E1, Ch_Sol),
     afficher(Ch_Sol).
  
-dfs_ts(Nbr, Ef, [Ef]):-
-	test_but(Ef,Nbr),
-    write([Ef]),nl.
+dfs_ts(Nbr, Ef, [[Ef]]):-
+	test_but(Ef,Nbr).
 
-dfs_ts(Nbr, E1,[Op|Ch1]) :-
+dfs_ts(Nbr, E1,[[E1|Re],[Op|Rop]]) :-
 	succ(E1, E2,Op),
-	dfs_ts(Nbr,E2, Ch1).
+	dfs_ts(Nbr,E2, Ch1),
+    suppr(Re,Ch1,Rop).
 
 /* Test 
+solution(347,[25,7,4,2,3],Ch,Op).
+Ch = [[25, 7, 4, 2, 3], [175, 4, 2, 3], [700, 2, 3], [350, 3], [347]],
+Op = [[25*7, [175*4, [700/2, [350-3]]]]]
 
-?- solution(347,[25,7,4,2,3]).
-25*7
-175*4
-700/2
-350-3
-[347]
-true .
+?- solution(1225,[25,5,2,3,4,10],CH,Op).
+CH = [[25, 5, 2, 3, 4, 10], [250, 5, 2, 3, 4], [245, 2, 3, 4], [5, 245, 4], [1225, 4]],
+Op = [[25*10, [250-5, [2+3, [5*245]]]]] .
+
 
 
 
