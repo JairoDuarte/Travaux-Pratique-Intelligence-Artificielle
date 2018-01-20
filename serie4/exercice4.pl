@@ -2,32 +2,54 @@
 :- include("../serie3/liste.pl").
 
 /* --------------------- Exemples d'états initial --------- */
-% On represente un récipient par r(Quantité_maximal,Quantité_actuel) et un état par une liste de récipients. 
-% Eo = [r(3,0),r(5,0),r(8,8)] 
+% Eo = [n,n,n,[],b,b,b]
 
-% etat_initial(E):- membre(r(X,Y),E). 
+% etat_initial(). 
 /* ------------------ Test de but ------------------- */
 
-test_but([r(3,0),r(5,4),r(8,4)]).
+test_but([b,b,b,[],n,n,n]).
 
 /* ------------------- Relation successeur ------------- */
 % succ(+E1,-E2)
 /*------------------------------------------------------*/
 succ(E1,E2) :-
-    suppr(r(Mx,X),E1,Rs),
-    suppr(r(My,Y),Rs,R),
-    verser(Mx,X,My,Y,Qx,Qy),
-    setof(r(M,K),membre(r(M,K),[r(Mx,Qx),r(My,Qy)|R]),E2).
+    deplacer(E1,E2).
 
-verser(_,X,My,Y,Qx,Qy) :-
-    X =\= 0,
-    Z is My -Y, 
-    (X > Z,Qy is Y+Z, Qx is X -Z; Z > X,Qy is Y + X,Qx is X-X).
+%avancer
+deplacer(L1,L2) :-
+    nieme(X,[],L1), I is X+1,
+    nieme(I,b,L1),
+    substituer(X,1,b,L1,L),
+    substituer(I,1,[],L,L2).
 
-verser(Mx,X,_,Y,Qx,Qy) :-
-    Y =\= 0,
-    Z is Mx -X, 
-    (Y > Z, Qx is X+Z, Qy is Y -Z; Z > Y, Qx is X + Y,Qy is Y-Y).
+%avancer
+deplacer(L1,L2) :-
+    nieme(X,[],L1), I is X-1,
+    nieme(I,n,L1),
+    substituer(X,1,n,L1,L),
+    substituer(I,1,[],L,L2).
+
+%sauter
+deplacer(L1,L2) :-
+    nieme(X,[],L1), I is X-2,
+    nieme(I,n,L1),
+    substituer(X,1,n,L1,L),
+    substituer(I,1,[],L,L2).
+
+%avancer
+deplacer(L1,L2) :-
+    nieme(X,[],L1), I is X+2,
+    nieme(I,b,L1),
+    substituer(X,1,b,L1,L),
+    substituer(I,1,[],L,L2).
+
+
+/* substituer(N,N,X,L1, L2). substituer l'élément dans la position N par la valeur de X dans la liste L1 et retourner la liste L2.   */
+substituer(N,N,X,[_|R],[X|R]).
+substituer(N,I,X,[Y|R],[Y|Rf]) :-
+	I1 is I +1,
+	substituer(N,I1,X,R,Rf).
+
 
 /*----------------------------------------------------------------------
 	Programme : dfs_ts.pl
@@ -60,17 +82,22 @@ dfs_ts(E1,[E1|Ch1]) :-
 	dfs_ts(E2, Ch1).
 
 /* Test 
-:- avec test_but([r(4,0),r(5,4),r(8,4)])
-
-?- solution([r(4,0),r(5,0),r(8,8)],E1).
-E1 = [[r(4, 0), r(5, 0), r(8, 8)], [r(4, 4), r(5, 0), r(8, 4)], [r(4, 0), r(5, 4), r(8, 4)
-]] ;
-
-:- avec  test_but([r(3,0),r(5,4),r(8,4)])
-
-?- solution([r(3,0),r(5,0),r(8,8)],E1).
-ERROR: Out of local stack
-
-la recherche échoue , la solution ne pas trouvable.  
+?- solution([n,n,n,[],b,b,b]).
+[n,n,n,[],b,b,b]
+[n,n,n,b,[],b,b]
+[n,n,[],b,n,b,b]
+[n,[],n,b,n,b,b]
+[n,b,n,[],n,b,b]
+[n,b,n,b,n,[],b]
+[n,b,n,b,n,b,[]]
+[n,b,n,b,[],b,n]
+[n,b,[],b,n,b,n]
+[[],b,n,b,n,b,n]
+[b,[],n,b,n,b,n]
+[b,b,n,[],n,b,n]
+[b,b,n,b,n,[],n]
+[b,b,n,b,[],n,n]
+[b,b,[],b,n,n,n]
+[b,b,b,[],n,n,n]
 
 */

@@ -11,6 +11,11 @@ Pour que les chaines de caracteres soient considérées comme des listes
 	:- set_prolog_flag(double_quotes, codes).
 
 */
+nieme(1,X,[X|_]).
+nieme(N,X,[_|R]):- nieme(N1,X,R),
+    N is N1+1. % on fait une affectation si la valeur dans N est égal au resultat de N1+1.
+
+
 
 % est_liste(+L) : vrai si L est une liste
 est_liste([]).

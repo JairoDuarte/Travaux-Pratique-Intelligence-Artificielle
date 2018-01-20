@@ -4,7 +4,7 @@
 
 nieme(1,X,[X|_]).
 nieme(N,X,[_|R]):- nieme(N1,X,R),
-    N is N1+1. % on fait une comparaison si la valeur dans N est égal au resultat de N1+1.
+    N is N1+1. % on fait une affectation si la valeur dans N est égal au resultat de N1+1.
 
 /* N est le nombre d occurrence de X dans L. nb_occur(X, N, [a,b,a,c,b,a]).  */
 
