@@ -7,7 +7,6 @@ etat_initial([tour(1,[1,2,3,4,5]),tour(2,[]),tour(3,[])]).
 
 %test_but([tour(1,[]),tour(2,[]),tour(3,[1,2,3])]).
 test_but(Ef) :-
-    write(Ef),nl,
     membre(tour(3,[1,2,3,4,5]),Ef).
 
 /* ------------------- Relation successeur ------------- */
