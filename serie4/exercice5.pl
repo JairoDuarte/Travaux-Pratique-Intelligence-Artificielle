@@ -2,12 +2,13 @@
 :- include("../serie3/liste.pl").
 /* --------------------- Exemples d'états initial --------- */
 % Eo = 
-etat_initial([tour(1,[1,2,3]),tour(2,[]),tour(3,[])]). 
+etat_initial([tour(1,[1,2,3,4,5]),tour(2,[]),tour(3,[])]). 
 /* ------------------ Test de but ------------------- */
 
 %test_but([tour(1,[]),tour(2,[]),tour(3,[1,2,3])]).
 test_but(Ef) :-
-    membre(tour(3,[1,2,3]),Ef).
+    write(Ef),nl,
+    membre(tour(3,[1,2,3,4,5]),Ef).
 
 /* ------------------- Relation successeur ------------- */
 % succ(+E1,-E2)
@@ -19,7 +20,7 @@ succ(E1,E2) :-
     deplacer(L1,L2,NL1,NL2),tour_valide(NL2),
     setof(tour(K,Z),membre(tour(K,Z),[tour(T1,NL1),tour(T2,NL2)|R3]),E2).
 
-succ(E1,E2,["deplace de la tour ",T1,"par ",T2]) :-
+succ(E1,E2,["deplacer de la tour ",T1,"vers la tour ",T2]) :-
     suppr(tour(T1,L1),E1,R1),
     suppr(tour(T2,L2),R1,R3),
     T1 \= T2,
@@ -189,16 +190,83 @@ solution_bfs(E0) :-
 [tour(1,[3]),tour(2,[1,2]),tour(3,[])]
 [tour(1,[]),tour(2,[1,2]),tour(3,[3])]
 [tour(1,[1]),tour(2,[2]),tour(3,[3])]
-[tour(1,[1]),tour(2,[]),tour(3,[2,3])]
-[tour(1,[]),tour(2,[]),tour(3,[1,2,3])]
+[tour(1,[1]),tour(2,[]),tour(3,[2,3])][tour(1,[]),tour(2,[]),tour(3,[1,2,3])]
 Actions :
 
-[deplace de la tour ,1,par ,3]
-[deplace de la tour ,1,par ,2]
-[deplace de la tour ,3,par ,2]
-[deplace de la tour ,1,par ,3]
-[deplace de la tour ,2,par ,1]
-[deplace de la tour ,2,par ,3]
-[deplace de la tour ,1,par ,3]
+[deplacer de la tour ,1,vers la tour ,3]
+[deplacer de la tour ,1,vers la tour ,2]
+[deplacer de la tour ,3,vers la tour ,2]
+[deplacer de la tour ,1,vers la tour ,3]
+[deplacer de la tour ,2,vers la tour ,1]
+[deplacer de la tour ,2,vers la tour ,3]
+[deplacer de la tour ,1,vers la tour ,3]
 
+Solution d'une tour avec 5 disques, ça a fait plus d'une heure pour trouver la solution.
+
+?- etat_initial(E),solution_dfs_a(E).
+tour(1,[1,2,3,4,5]),tour(2,[]),tour(3,[])]
+[tour(1,[2,3,4,5]),tour(2,[]),tour(3,[1])]
+[tour(1,[3,4,5]),tour(2,[2]),tour(3,[1])]
+[tour(1,[3,4,5]),tour(2,[1,2]),tour(3,[])]
+[tour(1,[4,5]),tour(2,[1,2]),tour(3,[3])]
+[tour(1,[1,4,5]),tour(2,[2]),tour(3,[3])]
+[tour(1,[1,4,5]),tour(2,[]),tour(3,[2,3])]
+[tour(1,[4,5]),tour(2,[]),tour(3,[1,2,3])]
+[tour(1,[5]),tour(2,[4]),tour(3,[1,2,3])]
+[tour(1,[5]),tour(2,[1,4]),tour(3,[2,3])]
+[tour(1,[2,5]),tour(2,[1,4]),tour(3,[3])]
+[tour(1,[1,2,5]),tour(2,[4]),tour(3,[3])]
+[tour(1,[1,2,5]),tour(2,[3,4]),tour(3,[])]
+[tour(1,[2,5]),tour(2,[3,4]),tour(3,[1])]
+[tour(1,[5]),tour(2,[2,3,4]),tour(3,[1])]
+[tour(1,[5]),tour(2,[1,2,3,4]),tour(3,[])]
+[tour(1,[]),tour(2,[1,2,3,4]),tour(3,[5])]
+[tour(1,[1]),tour(2,[2,3,4]),tour(3,[5])]
+[tour(1,[1]),tour(2,[3,4]),tour(3,[2,5])]
+[tour(1,[]),tour(2,[3,4]),tour(3,[1,2,5])]
+[tour(1,[3]),tour(2,[4]),tour(3,[1,2,5])]
+[tour(1,[3]),tour(2,[1,4]),tour(3,[2,5])]
+[tour(1,[2,3]),tour(2,[1,4]),tour(3,[5])]
+[tour(1,[1,2,3]),tour(2,[4]),tour(3,[5])]
+[tour(1,[1,2,3]),tour(2,[]),tour(3,[4,5])]
+[tour(1,[2,3]),tour(2,[]),tour(3,[1,4,5])]
+[tour(1,[3]),tour(2,[2]),tour(3,[1,4,5])]
+[tour(1,[3]),tour(2,[1,2]),tour(3,[4,5])]
+[tour(1,[]),tour(2,[1,2]),tour(3,[3,4,5])]
+[tour(1,[1]),tour(2,[2]),tour(3,[3,4,5])]
+[tour(1,[1]),tour(2,[]),tour(3,[2,3,4,5])]
+[tour(1,[]),tour(2,[]),tour(3,[1,2,3,4,5])]
+Actions :
+
+[deplacer de la tour ,1,vers la tour ,3]
+[deplacer de la tour ,1,vers la tour ,2]
+[deplacer de la tour ,3,vers la tour ,2]
+[deplacer de la tour ,1,vers la tour ,3]
+[deplacer de la tour ,2,vers la tour ,1]
+[deplacer de la tour ,2,vers la tour ,3]
+[deplacer de la tour ,1,vers la tour ,3]
+[deplacer de la tour ,1,vers la tour ,2]
+[deplacer de la tour ,3,vers la tour ,2]
+[deplacer de la tour ,3,vers la tour ,1]
+[deplacer de la tour ,2,vers la tour ,1]
+[deplacer de la tour ,3,vers la tour ,2]
+[deplacer de la tour ,1,vers la tour ,3]
+[deplacer de la tour ,1,vers la tour ,2]
+[deplacer de la tour ,3,vers la tour ,2]
+[deplacer de la tour ,1,vers la tour ,3]
+[deplacer de la tour ,2,vers la tour ,1]
+[deplacer de la tour ,2,vers la tour ,3]
+[deplacer de la tour ,1,vers la tour ,3]
+[deplacer de la tour ,2,vers la tour ,1]
+[deplacer de la tour ,3,vers la tour ,2]
+[deplacer de la tour ,3,vers la tour ,1]
+[deplacer de la tour ,2,vers la tour ,1]
+[deplacer de la tour ,2,vers la tour ,3]
+[deplacer de la tour ,1,vers la tour ,3]
+[deplacer de la tour ,1,vers la tour ,2]
+[deplacer de la tour ,3,vers la tour ,2]
+[deplacer de la tour ,1,vers la tour ,3]
+[deplacer de la tour ,2,vers la tour ,1]
+[deplacer de la tour ,2,vers la tour ,3]
+[deplacer de la tour ,1,vers la tour ,3]
 */
