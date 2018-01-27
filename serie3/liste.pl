@@ -58,6 +58,12 @@ inverser([X|R], L2) :-
 	inverser(R, R1),
 	conc(R1, [X], L2).
 
+% suppr_si(X,L1,L2) : suprime X de L1 pour obtenir L2 
+% si X n'est pas dans L1 alors L1 = L2
+suppr_si(_, [], []).
+suppr_si(X,[X|R],R).
+suppr_si(X,[Y|R],[Y|R1]):-
+	suppr_si(X,R,R1).
 
 %
 % afficher les �l�ments d'une liste

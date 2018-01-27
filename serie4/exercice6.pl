@@ -66,6 +66,9 @@ H(X) est la distance entre la position actuel du robot  et la porte.
 h(robot(P), H) :-
     porte(P1),
     mandist(P,P1,H).
+
+
+
 /*----------------------------------------------------------------------
 	Programme : dfs_id.pl
 
@@ -111,6 +114,10 @@ solution_dfs(E0) :-
 	dfs_id(E0, S),
 	inverser(S, Sol),
 	afficher(Sol).
+
+%-------------------- Algorithme Best_fs ------------------------
+:- consult('best_fs.pl').
+%-----------------------------------------------------------------------
 
 /*----------------------------------------------------------------------
 	Programme : a_etoile.pl
@@ -172,7 +179,7 @@ Procédures utilisées correspondantes au problème à résoudre :
 
 a_etoile(Etat_initial, Solution) :-
 	f(Etat_initial, 0, F),							
-	chercher([noeud(Etat_initial,0,F,[],[])], S),
+	chercher([noeud(Etat_initial,0,F,[])], S),
 	reverse(S, Solution).	
 
 % calcul de la fonction d'évaluation
@@ -181,12 +188,12 @@ f(Etat, G, F) :-
 	F is G + H.
 	
 % etat d'un noeud
-etat(noeud(E,_G,_F,_Ch,Action), E).
+%etat(noeud(E,_G,_F,_Ch), E).
 
 /* ----------------  Recherche ------------------------------- */
 /* si l'état final est atteinte */
-chercher( [noeud(Etat,_G,_F,Chemin,Action)|_], [Etat|Chemin] ) :-
-	test_but(Etat).
+/*chercher( [noeud(Etat,_G,_F,Chemin)|_], [Etat|Chemin] ) :-
+	write(noeud(Etat,_G,_F,Chemin)),nl,test_but(Etat).
 
 % sinon
 chercher([Noeud|Reste_Candidats], Solution) :-
@@ -195,8 +202,8 @@ chercher([Noeud|Reste_Candidats], Solution) :-
 	chercher(Nouveaux_Candidats, Solution).
 
 % ----------------  Developpement
-noeud_succ(noeud(E,G,_F,Ch, Actions), noeud(E1,G1,F1,[E|Ch],[A|Actions])) :-
-	succ(E, E1, A,C),
+noeud_succ(noeud(E,G,_F,Ch), noeud(E1,G1,F1,[E|Ch])) :-
+	succ(E, E1,A,C),
 	G1 is G + C,
 	f(E1, G1, F1),
 	not( membre(E1, Ch)).
@@ -215,17 +222,17 @@ inserer_tout([N|Reste], Candidats1, Candidats3) :-
 % Cas 1 : Cdts1 = [N1|R1] 
 % Cas 1.1 : état(N) = état(N1) choisir le meilleur
 % si N est meilleur que N1
-inserer( noeud(E,G,F,Ch,Action), [noeud(E,_G1,F1,_Ch1,Action1)|R1], [noeud(E,G,F,Ch,Action)|R1]) :- 
+inserer( noeud(E,G,F,Ch), [noeud(E,_G1,F1,_Ch1)|R1], [noeud(E,G,F,Ch)|R1]) :- 
 	F < F1, ! .
 % sinon
-inserer( noeud(E,_G,_F,_Ch,Action), [noeud(E,G1,F1,Ch1,Action1)|R1], [noeud(E,G1,F1,Ch1,Action1)|R1]) :- ! .
+inserer( noeud(E,_G,_F,_Ch), [noeud(E,G1,F1,Ch1)|R1], [noeud(E,G1,F1,Ch1)|R1]) :- ! .
 
 % Cas 1.2 : état(N) <> état(N1)
 % si N est meilleur que N1
 inserer(N,[N1|R1],[N,N1|R2]) :- 
 	meilleur(N,N1), ! ,
 	etat(N, E),
-	suppr([E,_,_,_], R1, R2).
+	suppr(noeud(E,_G,_F,_Ch), R1, R2).
 % sinon
 inserer(N,[N1|R1],[N1|R2]) :- 
 	inserer(N,R1,R2), !.
@@ -234,11 +241,17 @@ inserer(N,[N1|R1],[N1|R2]) :-
 inserer(N,[],[N]).
 
 meilleur( noeud(_,_,F1,_,_) , noeud(_,_,F2,_,_) ) :- F1 <  F2.
-
+*/
 solution_a(E0) :-
 	dfs_id(E0, S),
 	inverser(S, Sol),
 	afficher(Sol).
+
+a_etoile :-
+		etat_initial(E), resoudre(f, robot(E), Chemin_Sol, Actions, Cout),
+		write("Chemin solution: "),nl, afficher(Chemin_Sol), nl,
+		write("Coût du chemin = "), write(Cout),nl,
+        write("Actions: "),nl,afficher(Actions).
 /*
 
 */
