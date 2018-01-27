@@ -18,26 +18,24 @@ mur(p(2,6)).
 % Eo = 
 etat_initial(robot(p(8,1))). 
 /* ------------------ Test de but ------------------- */
-
 test_but(robot(P)) :-
     porte(P).
 
-/* ------------------- Relation successeur ------------- */
-% succ(+E1,-E2)
-/*------------------------------------------------------*/
+/* ------------------- Relation successeur ------------- 
+ succ(+E1,-E2)
+ succ(+E1,-E2,Action)
+------------------------------------------------------*/
 succ(robot(p(X,Y)),robot(p(X1,Y1))) :-
     voisine(p(X,Y),p(X1,Y1)),mandist(p(X,Y),p(X1,Y1),1),
     valide(p(X1,Y1)),not(mur(p(X1,Y1))).
 
-succ(E1,E2,["deplacer de la tour ",T1,"vers la tour ",T2]) :-
-    suppr(tour(T1,L1),E1,R1),
-    suppr(tour(T2,L2),R1,R3),
-    T1 \= T2,
-    deplacer(L1,L2,NL1,NL2),tour_valide(NL2),
-    setof(tour(K,Z),membre(tour(K,Z),[tour(T1,NL1),tour(T2,NL2)|R3]),E2).
-    %conc([tour(T2,NL2)],R3,Nt),conc([tour(T1,NL1)],Nt,E2).
+succ(robot(p(X,Y)),robot(p(X1,Y1)),["deplacer de la case ",X/Y,"vers la case ",X1/Y1]) :-
+    voisine(p(X,Y),p(X1,Y1)),mandist(p(X,Y),p(X1,Y1),1),
+    valide(p(X1,Y1)),not(mur(p(X1,Y1))).
 
-/*voisine(+P1,-P2) P2 est la position voisine de P1   */
+succ(E1,E2,Action,1) :- succ(E1,E2,Action).
+
+/* voisine(+P1,-P2) P2 est la position voisine de P1   */
 voisine(p(X,Y),p(X1,Y)) :- X1 is X + 1.
 voisine(p(X,Y),p(X1,Y)) :- X1 is X - 1, X1 > 0.
 voisine(p(X,Y),p(X,Y1)) :- Y1 is Y + 1.
@@ -54,12 +52,20 @@ mandist(p(X1,Y1), p(X2,Y2), D) :-
     abs(Y1, Y2, Dy), 
     D is Dx + Dy.
 
-% abs(A,B,D) : D = |A-B| (valeur absolue) 
+/* abs(A,B,D) : D = |A-B| (valeur absolue)  */
 abs(A,B,D) :-
     D is A - B, 
     D >= 0, !. 
 abs(A,B,D) :- 
     D is B - A.
+
+
+/* ------------------  Heuristique --------------------------------- 
+H(X) est la distance entre la position actuel du robot  et la porte.
+*/ 
+h(robot(P), H) :-
+    porte(P1),
+    mandist(P,P1,H).
 /*----------------------------------------------------------------------
 	Programme : dfs_id.pl
 
@@ -105,4 +111,137 @@ solution_dfs(E0) :-
 	dfs_id(E0, S),
 	inverser(S, Sol),
 	afficher(Sol).
+
+/*----------------------------------------------------------------------
+	Programme : a_etoile.pl
+	Algorithme A*
+		
+	On represente un noeud N par 
+		N = noeud(Etat,G,F,Chemin)
+	où 
+	- Etat est l'état correspondant au noeud 
+	- Chemin est le chemin qui mène de l'état initial à cet état dans l'ordre inverse.
+	- G = g(N) cout entre l'état initial et Etat : 
+			g(N) = cout(Chemin) + cout(Pere(Etat), Etat)
+	- F = f(N) = g(N) + h(N)
+	
+	Noeud initial : noeud(Etat_initial,0, F0, [])
+		F0 = f(Etat_initial) (sans interet)
+
+-----------------------------------------------------------------------
+Procédure de résolution :	
+	a_etoile(Etat_initial, Solution)
+		Solution est le chemin de Etat_initial à l'état final (but)
+
+Procédures utilisées :
+	- f(Etat, G, F) 
+		calcul de F = f(Etat) (fonction d'évaluation)
+	- etat(N,E)
+		E est l'etat correspondant du noeud N
+	- chercher(Candidats, S)
+		Candidats : liste des noeuds candidats
+		S : chemin recherché dans l'ordre inverse
+		cherche la solution parmi la liste des candidats
+	- noeud_succ(N1, N2)
+		N2 est un noeud successeur de N1.
+		l'état de N2 ne se trouve pas dans le chemin de N1 (evite les
+		cycles).
+	- developper(N, Lst_Succ)
+		Lst_Succ est la liste des successeurs de N
+	- inserer_tout(L,Cdts1, Cdts2)
+		insere les noeuds de la liste L dans Cdts1 pour obtenir Cdts2
+		suivant l'ordre croissant de F (valur d'évaluation)
+	- inserer(N,Cdts1, Cdts2)
+		insere dans l'ordre croissant de F
+		le noeud N dans Cdts1 pour obtenir Cdts2
+	- meilleur(N1,N2)
+		vrai si f(N1) < f(N2)
+	
+-----------------------------------------------------------------------
+Procédures utilisées correspondantes au problème à résoudre :
+	- test_but(Etat)
+		est vrai si Etat est l'état final (état but)
+
+	- succ(Etat1, Etat2,Cout)
+		relation successeur : Etat2 est un successeur de Etat1
+		Cout = cout(E1, E2)
+	
+	- h(Etat, H) 
+		H = h(Etat) fonction heuristique	
+ ---------------------------------------------------------------------*/
+
+a_etoile(Etat_initial, Solution) :-
+	f(Etat_initial, 0, F),							
+	chercher([noeud(Etat_initial,0,F,[],[])], S),
+	reverse(S, Solution).	
+
+% calcul de la fonction d'évaluation
+f(Etat, G, F) :-
+	h(Etat, H),
+	F is G + H.
+	
+% etat d'un noeud
+etat(noeud(E,_G,_F,_Ch,Action), E).
+
+/* ----------------  Recherche ------------------------------- */
+/* si l'état final est atteinte */
+chercher( [noeud(Etat,_G,_F,Chemin,Action)|_], [Etat|Chemin] ) :-
+	test_but(Etat).
+
+% sinon
+chercher([Noeud|Reste_Candidats], Solution) :-
+	developper(Noeud, Lst_Succ),
+	inserer_tout(Lst_Succ, Reste_Candidats, Nouveaux_Candidats),
+	chercher(Nouveaux_Candidats, Solution).
+
+% ----------------  Developpement
+noeud_succ(noeud(E,G,_F,Ch, Actions), noeud(E1,G1,F1,[E|Ch],[A|Actions])) :-
+	succ(E, E1, A,C),
+	G1 is G + C,
+	f(E1, G1, F1),
+	not( membre(E1, Ch)).
+	
+developper(N, Lst_Succ) :-
+	bagof( N1 , noeud_succ(N,N1), Lst_Succ). 
+
+% ----------------  Insertion
+inserer_tout([], Candidats, Candidats).
+
+inserer_tout([N|Reste], Candidats1, Candidats3) :-
+	inserer(N, Candidats1, Candidats2),
+	inserer_tout(Reste, Candidats2, Candidats3).
+
+% inserer(N, Cdts1, Cdts2)
+% Cas 1 : Cdts1 = [N1|R1] 
+% Cas 1.1 : état(N) = état(N1) choisir le meilleur
+% si N est meilleur que N1
+inserer( noeud(E,G,F,Ch,Action), [noeud(E,_G1,F1,_Ch1,Action1)|R1], [noeud(E,G,F,Ch,Action)|R1]) :- 
+	F < F1, ! .
+% sinon
+inserer( noeud(E,_G,_F,_Ch,Action), [noeud(E,G1,F1,Ch1,Action1)|R1], [noeud(E,G1,F1,Ch1,Action1)|R1]) :- ! .
+
+% Cas 1.2 : état(N) <> état(N1)
+% si N est meilleur que N1
+inserer(N,[N1|R1],[N,N1|R2]) :- 
+	meilleur(N,N1), ! ,
+	etat(N, E),
+	suppr([E,_,_,_], R1, R2).
+% sinon
+inserer(N,[N1|R1],[N1|R2]) :- 
+	inserer(N,R1,R2), !.
+
+% Cas 2 :Cdts = []
+inserer(N,[],[N]).
+
+meilleur( noeud(_,_,F1,_,_) , noeud(_,_,F2,_,_) ) :- F1 <  F2.
+
+solution_a(E0) :-
+	dfs_id(E0, S),
+	inverser(S, Sol),
+	afficher(Sol).
+/*
+
+*/
+
+
 
