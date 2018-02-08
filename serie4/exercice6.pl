@@ -248,10 +248,10 @@ solution_a(E0) :-
 	afficher(Sol).
 
 a_etoile :-
-		etat_initial(E), resoudre(f, robot(E), Chemin_Sol, Actions, Cout),
-		write("Chemin solution: "),nl, afficher(Chemin_Sol), nl,
-		write("Coût du chemin = "), write(Cout),nl,
-        write("Actions: "),nl,afficher(Actions).
+	etat_initial(E), resoudre(f, robot(E), Chemin_Sol, Actions, Cout),
+	write("Chemin solution: "),nl, afficher(Chemin_Sol), nl,
+	write("Coût du chemin = "), write(Cout),nl,
+    write("Actions: "),nl,afficher(Actions).
 /*
 
 */
